@@ -108,7 +108,7 @@ g + geom_point() +
 # Note that in the call to geom_point() we are using aes() to pass 
 # different arguments, color, size and fill in this case.
 g + geom_point() +
-  geom_point(aes(x,y2), color="lightblue", size=4) + #we can co-plot a second variable
+  geom_point(aes(x, y2), color="lightblue", size=4) + #we can co-plot a second variable
   ggtitle("Our First Amazing Plot") +
   xlab("Shared X Coordinates") +
   ylab("Y Label") + 
@@ -137,14 +137,17 @@ There is an important relationship between the aesthetics and data that we need 
 # scaled in this case based on the variable y2.
 g + geom_point(aes(color=y2, size=y2, fill=y2), shape=24) +
   geom_point(aes(x, y2), color="lightblue", size=4) + #we can co-plot a second variable
-  scale_color_gradient(low="red", high = "yellow") + #change the color of the shapes
-  scale_fill_gradient(low="yellow", high="red") + #change the color of the fill
-  
-  geom_line(aes(x,y2), linetype="dashed", size=1.5, alpha=.6) + #add a transparent dashed line
+  scale_color_gradient(low="red", high = "yellow", name = "Color") + #change the color of the shapes
+  scale_fill_gradient(low="yellow", high="red", name = "Fill") + #change the color of the fill
+  geom_line(aes(x, y2), linetype="dashed", size=1.5, alpha=.6) + #add a transparent dashed line
   xlab("Shared X Coordinates") +
   ylab("Y Label") +
   ggtitle("Our First Amazing Plot\nNow with TWO Variables!") + 
-  theme_dark()
+  theme_dark() +
+  theme(legend.box = "horizontal")
+# notice that ggplot2 adds the legends automatically
+# we can make changes using the theme() function
 ```
 
+This example only touches the surface of the extent of customization available in `ggplot2`.  Just about every aspect of every geometry can be modified to accomodate the exact position, shape, name, color, etc. of your data.  But, the base elements of `ggplot2` and the ease of construction make visualizing your results very easy and pleasing to the eye.
 
