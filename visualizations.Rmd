@@ -1,0 +1,150 @@
+---
+title: "Visualizations in R"
+date: "March 28, 2018"
+output: html_notebook
+---
+
+Today we are going to talk about how to visualize data in R.  There are multiple packages that can be used for this, including base R.  Base R has all the tools and functions needed to effectively communicate results.  That said, more recent packages offer a more modular approach to building visualizations using a *grammer of graphics*.  This class will focus on using the `ggplot2` library for plotting and visualizations.
+
+`ggplot2` is developed as part of the `tidyverse`, and loads as a base component of the library.
+
+```{r libraries}
+library(tidyverse)
+```
+
+## A Simple Plot
+
+Let's first make a sequence of data to work with.
+
+```{r simple-data}
+# three sequences of data
+x <- seq(0,1, by=0.1)
+y <- x
+y2 = x^2
+```
+
+
+Being a part of the `tidyverse` means `ggplot2` works best with *tidy data*.  `ggplot2` expects the data as a data frame, and we can access all the variables within it.  So, put the data into a data frame, or a tibble in this case.
+
+```{r}
+# put the data into a tibble
+df1 <- tibble(x=x,y=y,y2=y2)
+
+# take a look at the data
+df1
+```
+
+
+### Constructing the Plot
+
+One of the most powerful aspects of `ggplot2` is the ability to quickly generate multiple types of visualizations using the same data object.  The base element in a call to `ggplot2` is the constructor, `ggplot()`, which creates an element with the data.
+
+The basic syntax for `ggplot2` is to *add* elements to the the base object:
+
+Data Object + mappings(color, size, shape) + geometry = plot
+
+The only **required** argument is `data`.  A secondary, but not strictly required, argument is `aes()`, or aesthetics (plotting variables) to use.  These are the actual columns of data to apply in the plot and how to visualize them (e.g. color or size).    The call to `aes()` is used in different ways based on the context or the object.  Different calls to `aes()` can be made in different plot elements.  You will see that in a moment.
+
+```{r constructor}
+# make the call to the ggplot base function and pass the data frame.
+# the aes() are the aesthetics (plotting variables) to use.
+g <- ggplot(data = df1, aes(x = x, y = y))
+
+# what does this do?  What do you expect to see?
+g
+
+
+
+
+# plots a blank page.  There is no geometry
+```
+
+We are assigning the results of the call to `ggplot()` a variable in the example above.  While this is not necessary, it does allow us to reuse the base object to build different plots.  We can see how to build a plot without assigning it to a variable in a minute.
+
+`ggplot2` uses *geometries* to describe the different types of visualizations to apply to the data.  Geometries refer to plot types like: bars, points, lines, etc.  Again, we can apply different types of geometries to the same base object, but they do need to be related.
+
+Now that we have a base plot object, we can apply various geometries.  We need to add all the elements, which can be very detailed and fine-tuned.  Let's break down the plot element-by-element, adding one at a time.
+
+Start with the base data object, adding a point to each element.
+
+```{r add-point}
+# create a very basic point plot
+g + geom_point()
+```
+
+Notice that the call above did not assign the output to a new variable; we simply generated the plot using the base data object and assigning the aesthetics to a point geometry.  We can easily assign the output to a variable for use later or to save, but it's not necessary if you only want to see the plot.
+
+Now *add* a title:
+
+```{r add-title}
+g + geom_point() +
+  ggtitle("Our First Amazing Plot") 
+```
+
+Great, but we can fine-tune the plot, *adding* elements like axis labels.
+
+```{r add-axis}
+g + geom_point() +
+  ggtitle("Our First Amazing Plot") +
+  xlab("Shared X Coordinates") +
+  ylab("Y Label")
+```
+
+We can also change the basic theme of the plots to one of the bulit in verions.  If you are feeling adventurous, you can also find libraries with custom themes.  Check out [ggthemes](https://github.com/jrnold/ggthemes)
+
+```{r add-theme}
+# add a dark theme
+g + geom_point() +
+  ggtitle("Our First Amazing Plot") + # add title
+  xlab("Shared X Coordinates") + # add a label for x-axis
+  ylab("Y Label") + # add label for y-axis
+  theme_dark() # change the theme
+```
+
+
+`ggplot2` also supports multiple geometries on the same plot as long as the data share a common coordinate system and range.  It doesn't make much sense to plot unrelated data on the same set of scales.  Let's *add* a second variable.
+
+```{r add-variable}
+# Note that in the call to geom_point() we are using aes() to pass 
+# different arguments, color, size and fill in this case.
+g + geom_point() +
+  geom_point(aes(x,y2), color="lightblue", size=4) + #we can co-plot a second variable
+  ggtitle("Our First Amazing Plot") +
+  xlab("Shared X Coordinates") +
+  ylab("Y Label") + 
+  theme_classic()
+```
+
+Now that we have visualized several elements, we can learn how to further refine elements of the plot.  For example, We can add color and shapes scaled to the underlying values of the data.
+
+```{r add-scaled-color}
+g + geom_point() +
+  geom_point(aes(x, y2), color="lightblue", size=4) + #we can co-plot a second variable
+  scale_color_gradient(low="red", high = "yellow") + #change the color of the shapes
+  scale_fill_gradient(low="yellow", high="red") + #change the color of the fill
+  geom_line(aes(x, y2), linetype="dashed", size=1.5, alpha=0.6) + #add a transparent dashed line to the y2 line
+  ggtitle("Our First Amazing Plot\nNow with TWO Variables!") +
+  xlab("Shared X Coordinates") +
+  ylab("Y Label") + 
+  theme_classic()
+```
+
+There is an important relationship between the aesthetics and data that we need to understand.  Aesthetic mappings are applied to each element in the data according to the value of the data.  That is, each data variable in a call to `aes()` is treated as a categorical variable, scaled accordingly.  If you want a single value applied to a varible, then that call needs to be outside the `aes()` mappings.  For example:
+
+```{r}
+# The argument for shape is made outside of the aes() because it is a single
+# value applied to all elements, versus the color, size and fill, which are
+# scaled in this case based on the variable y2.
+g + geom_point(aes(color=y2, size=y2, fill=y2), shape=24) +
+  geom_point(aes(x, y2), color="lightblue", size=4) + #we can co-plot a second variable
+  scale_color_gradient(low="red", high = "yellow") + #change the color of the shapes
+  scale_fill_gradient(low="yellow", high="red") + #change the color of the fill
+  
+  geom_line(aes(x,y2), linetype="dashed", size=1.5, alpha=.6) + #add a transparent dashed line
+  xlab("Shared X Coordinates") +
+  ylab("Y Label") +
+  ggtitle("Our First Amazing Plot\nNow with TWO Variables!") + 
+  theme_dark()
+```
+
+
