@@ -10,5 +10,5 @@ The RStudio web sites also offer details and examples.
 
 There are also several chapters and web sites I often use for reference
 
-- [Cookbook for R](http://www.cookbook-r.com)
+- [Cookbook for R](http://www.cookbook-r.com/Graphs/)
 - [R for Data Science](http://r4ds.had.co.nz/data-visualisation.html)
