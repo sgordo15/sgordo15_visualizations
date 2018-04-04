@@ -1,0 +1,78 @@
+---
+title: "Visualization Part 2"
+output: html_notebook
+---
+
+## A working example
+
+The previous notebook was a simple introduction to the syntax for constructing a `ggplot` object.  This notebook will introduce a more meaningful example using landcover data from the NSF National Ecological Observation Network (NEON) project.  For more information you can look at the [NEON website](http://www.neonscience.org)
+
+Load the tidyverse library
+
+```{r libraries}
+library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+library(knitr)
+
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+For this project we are going to use vegetation structure data from the San Juaquin Experimental Range in California.
+
+### Load the data
+
+```{r load-structure-data}
+sjer_veg <- read_csv("data/D17_2013_SJER_vegStr.csv")
+# View(sjer_veg)
+sjer_veg
+```
+
+The loaded data contain observations for vegetation structure for individual plots at the site.  We can use our data wrangling skills to query the data, summarzing various fields of interest by plot.
+
+```{r summary-queries}
+sjer_veg %>% 
+  group_by(plotid) %>% 
+  summarise(mean(maxcanopydiam))
+```
+
+We can quickly visualize this in a single piped operation.
+
+```{r summary-viz}
+sjer_veg %>% 
+  group_by(plotid) %>% 
+  summarise(m = mean(maxcanopydiam)) %>% 
+  ggplot(aes(x = plotid, y = m)) +
+    geom_col() + # a column plot for each entry
+    ggtitle("SJER Distribution of Canopy Diameter by Plot") +
+    xlab("Plot ID") + 
+    ylab("Max Diameter (m)") +
+    theme_bw() + #change the theme
+    theme(plot.margin=unit(c(.5,1,.5,1), "cm"), #adjust the margin (top, right, bottom, left)
+          axis.text.x = element_text(angle = -60, hjust = -0.1)) # rotate the axis labels
+
+```
+
+
+The benefit of the tidyverse is how well the libraries work together to streamline data prep, query, and visualizations.  Let's try another example.  The data folder contains a file with a description of the fields in the vegStructure data.  There is a field called `livingcanopy` describing the estimated percent of the canopy that is living.  We can use that as a color gradient for a plot of canopy diameter compared to stem height.
+
+```{r height-diameter}
+
+sjer_veg %>% 
+  select(maxcanopydiam, stemheight, livingcanopy) %>% 
+  ggplot(aes(x = stemheight, y = maxcanopydiam)) + 
+    geom_point(aes(color = livingcanopy)) +
+    scale_color_gradient(low = "blue", high = "green") + #change colors 
+    xlab("Stem Height") + #add x label
+    ylab("Max Canopy Diameter")+ #add y label
+    labs(color = "Percent Living Canopy") + #change label on legend
+    theme_tufte()
+    
+      
+```
+
+
+
+
