@@ -64,9 +64,13 @@ sjer_veg %>%
   select(maxcanopydiam, stemheight, livingcanopy) %>% 
   ggplot(aes(x = stemheight, y = maxcanopydiam)) + 
     geom_point(aes(color = livingcanopy)) +
-    scale_color_gradient(low = "red", high = "green")
-
-# how can we improve this plot?
+    scale_color_gradient(low = "blue", high = "green") + #change colors 
+    xlab("Stem Height") + #add x label
+    ylab("Max Canopy Diameter")+ #add y label
+    labs(color = "Percent Living Canopy") + #change label on legend
+    theme_tufte()
+    
+      
 ```
 
 
