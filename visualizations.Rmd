@@ -3,6 +3,11 @@ title: "Visualizations in R"
 date: "March 28, 2018"
 output: html_notebook
 ---
+New Notes:
++ is for graphing
+%>% is for data wrangling
+ggsave() uses whatever plot was drawn last 
+
 
 Today we are going to talk about how to visualize data in R.  There are multiple packages that can be used for this, including base R.  Base R has all the tools and functions needed to effectively communicate results.  That said, more recent packages offer a more modular approach to building visualizations using a *grammer of graphics*.  This class will focus on using the `ggplot2` library for plotting and visualizations.
 
@@ -10,6 +15,9 @@ Today we are going to talk about how to visualize data in R.  There are multiple
 
 ```{r libraries}
 library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
 ```
 
 ## A Simple Plot
@@ -118,7 +126,7 @@ Now that we have visualized several elements, we can learn how to further refine
 ```{r add-scaled-color}
 g + geom_point() +
   geom_point(aes(x, y2), color="lightblue", size=4) + # co-plot a second variable with a different color
-  geom_line(aes(x, y2), linetype="dashed", size=1.5, alpha=0.6) + #add a transparent dashed line to the y2 line
+  geom_line(aes(x, y2), linetype="dashed", size=1.5, alpha=0.6) + #add a transparent (alpha = transparency) dashed line to the y2 line
   ggtitle("Our First Amazing Plot\nNow with TWO Variables!") +
   xlab("Shared X Coordinates") +
   ylab("Y Label") + 

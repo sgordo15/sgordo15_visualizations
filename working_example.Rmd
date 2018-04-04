@@ -11,6 +11,12 @@ Load the tidyverse library
 
 ```{r libraries}
 library(tidyverse)
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+library(knitr)
+
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
